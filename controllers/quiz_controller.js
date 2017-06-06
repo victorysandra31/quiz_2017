@@ -238,7 +238,7 @@ exports.randomcheck = function (req, res, next) {
         score = req.session.answered_questions.length-1;       // Guardado del ID de la nueva pregunta contestada correctamente
     }
 
-    res.render('quizzes/randomresult', {
+    res.render('quizzes/randomcheck', {
         score: score,   
         result: result,
         answer: answer
