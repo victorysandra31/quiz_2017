@@ -228,14 +228,13 @@ exports.randomcheck = function (req, res, next) {
     var answer = req.query.answer || "";    // Guardado de la respuesta del jugador
 
     var result = answer.toLowerCase().trim() === req.quiz.answer.toLowerCase().trim();  // Comprobación de la veracidad de la respuesta
+    var score = req.session.answered_questions.length-1;    // Puntuación
 
     if(!result) {
         req.session.answered_questions = [0];                   // Juego terminado y borrado de las preguntas ya contestadas 
     } else {
         req.session.answered_questions.push(req.quiz.id);       // Guardado del ID de la nueva pregunta contestada correctamente
     }
-
-    var score = req.session.answered_questions.length-1;    // Puntuación
 
     res.render('quizzes/randomresult', {
         score: score,   
