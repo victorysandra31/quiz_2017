@@ -8,7 +8,7 @@ exports.load = function (req, res, next, quizId) {
 
     models.Quiz.findById(quizId, {
         include: [
-            models.Tip,
+            {model: models.Tip, include: [{model: models.User, as:'Author'}]},
             {model: models.User, as: 'Author'}
         ]
     })
@@ -218,6 +218,62 @@ exports.check = function (req, res, next) {
 
     res.render('quizzes/result', {
         quiz: req.quiz,
+        result: result,
+        answer: answer
+    });
+};
+
+// GET /quizzes/randomplay
+exports.randomplay = function (req, res, next) {
+	
+	    var answered_questions = req.session.answered_questions;
+	
+	    if (!answered_questions) {  // Comprobación de la existencia del array que almacena los IDs de las preguntas contestadas
+	        answered_questions = req.session.answered_questions = [0];
+	    }
+	
+	    models.Quiz.findAll({       // Búsqueda de las preguntas pendientes por responder
+	        where: {
+	            id: {
+	                $notIn: answered_questions
+	            }
+	        }   
+	    })
+	    .then(function(pending_quizzes) {
+	        if(pending_quizzes.length > 0) {   // Quedan preguntas pendientes de responder
+	            var quiz = pending_quizzes[Math.floor((Math.random() * pending_quizzes.length))]; // Elección aleatoria de la pregunta
+	            res.render('quizzes/randomplay', {
+	                score: answered_questions.length-1, // Puntuación
+	                quiz: quiz
+	            });
+	        } else {                // No quedan preguntas pendientes de responder
+	                res.render('quizzes/randomnomore', {
+	                score: answered_questions.length-1  // Puntuación
+	            });
+	        }
+	    })
+	    .catch(function(error) {    // Atencíon del error de acceso a la BBDD
+	        next(error);
+	    });
+	};
+	
+// GET /quizzes/random_result/:quizId(\\d+)
+exports.randomcheck = function (req, res, next) {
+
+    var answer = req.query.answer || "";    // Guardado de la respuesta del jugador
+
+    var result = answer.toLowerCase().trim() === req.quiz.answer.toLowerCase().trim();  // Comprobación de la veracidad de la respuesta
+
+    if(!result) {
+        req.session.answered_questions = [0];                   // Juego terminado y borrado de las preguntas ya contestadas 
+    } else {
+        req.session.answered_questions.push(req.quiz.id);       // Guardado del ID de la nueva pregunta contestada correctamente
+    }
+
+    var score = req.session.answered_questions.length-1;    // Puntuación
+
+    res.render('quizzes/randomresult', {
+        score: score,   
         result: result,
         answer: answer
     });
