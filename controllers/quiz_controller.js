@@ -231,14 +231,13 @@ exports.randomcheck = function (req, res, next) {
     var score;    // Puntuación
 
     if(!result) {
-       // score = req.session.answered_questions.length-1;
         req.session.answered_questions = [0];                   // Juego terminado y borrado de las preguntas ya contestadas 
     } else {
         req.session.answered_questions.push(req.quiz.id);
-       // score = req.session.answered_questions.length-1;       // Guardado del ID de la nueva pregunta contestada correctamente
+          // Guardado del ID de la nueva pregunta contestada correctamente
     }
     score = req.session.answered_questions.length-1;
-    
+
     res.render('quizzes/randomcheck', {
         score: score,   
         result: result,

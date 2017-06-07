@@ -13,8 +13,8 @@ router.get('/author', function(req, res, next) {
     res.render('author');
 });
 
-router.get('/quizzes/random_play',function(req,res,next){
-	res.render('/quizzes/random_play',{score:0});
+router.get('/quizzes/randomplay',function(req,res,next){
+	res.render('/quizzes/randomplay',{score:0});
 });
 //
 
