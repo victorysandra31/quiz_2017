@@ -14,7 +14,7 @@ router.get('/author', function(req, res, next) {
 });
 
 router.get('/quizzes/randomplay',function(req,res,next){
-	res.render('/quizzes/randomplay',{score:0});
+	res.render('/quizzes/randomplay',{score:1});
 });
 //
 
